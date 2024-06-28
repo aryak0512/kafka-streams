@@ -1,22 +1,17 @@
 package com.aryak.kafka_stream;
 
 import com.aryak.kafka_stream.topology.GreetingsTopology;
-import jdk.internal.access.JavaIOFileDescriptorAccess;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.*;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.common.internals.Topic;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.Topology;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -64,7 +59,6 @@ public class KafkaStreamApplication implements CommandLineRunner {
         try {
             createTopicsResult.all().get();
 			log.info("Topics created successfully!");
-
         } catch (Exception e) {
 			log.error("Error in creating topics!", e);
         }
