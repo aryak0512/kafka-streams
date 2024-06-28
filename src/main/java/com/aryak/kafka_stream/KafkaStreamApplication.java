@@ -7,14 +7,14 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import static com.aryak.kafka_stream.utils.Constants.GREETINGS;
-import static com.aryak.kafka_stream.utils.Constants.GREETINGS_UPPERCASE;
-import static java.util.stream.Collectors.toList;
+import java.util.List;
+
+import static com.aryak.kafka_stream.utils.Constants.*;
 
 @SpringBootApplication
 public class KafkaStreamApplication implements CommandLineRunner {
 
-    private KafkaUtils kafkaUtils;
+    private final KafkaUtils kafkaUtils;
 
     public KafkaStreamApplication(KafkaUtils kafkaUtils) {
         this.kafkaUtils = kafkaUtils;
@@ -31,10 +31,10 @@ public class KafkaStreamApplication implements CommandLineRunner {
         var props = kafkaUtils.getProperties();
 
         // step 2 : create the topics to avoid errors
-        //kafkaUtils.createTopics(props, List.of(GREETINGS, GREETINGS_UPPERCASE));
+        kafkaUtils.createTopics(props, List.of(GREETINGS, GREETINGS_UPPERCASE, RESULT_TOPIC));
 
         // step 3 : get and start the topology
-        var topology = GreetingsTopology.buildTopology();
+        var topology = GreetingsTopology.buildTopology2();
 
         KafkaStreams kafkaStreams = new KafkaStreams(topology, props);
 
@@ -46,7 +46,5 @@ public class KafkaStreamApplication implements CommandLineRunner {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
-
 }
