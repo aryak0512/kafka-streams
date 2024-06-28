@@ -7,8 +7,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.util.List;
-
 import static com.aryak.kafka_stream.utils.Constants.GREETINGS;
 import static com.aryak.kafka_stream.utils.Constants.GREETINGS_UPPERCASE;
 import static java.util.stream.Collectors.toList;
@@ -33,16 +31,22 @@ public class KafkaStreamApplication implements CommandLineRunner {
         var props = kafkaUtils.getProperties();
 
         // step 2 : create the topics to avoid errors
-        kafkaUtils.createTopics(props, List.of(GREETINGS, GREETINGS_UPPERCASE));
+        //kafkaUtils.createTopics(props, List.of(GREETINGS, GREETINGS_UPPERCASE));
 
         // step 3 : get and start the topology
         var topology = GreetingsTopology.buildTopology();
 
-        try ( KafkaStreams kafkaStreams = new KafkaStreams(topology, props) ) {
+        KafkaStreams kafkaStreams = new KafkaStreams(topology, props);
+
+        // graceful application shutdown
+        Runtime.getRuntime().addShutdownHook(new Thread(kafkaStreams::close));
+
+        try {
             kafkaStreams.start();
-            // graceful application shutdown
-            Runtime.getRuntime().addShutdownHook(new Thread(kafkaStreams::close));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
     }
 
 }
