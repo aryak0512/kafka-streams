@@ -50,7 +50,7 @@ public class KafkaStreamApplication implements CommandLineRunner {
         try {
             kafkaStreams.start();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Exception occurred : {}", e.getMessage(), e);
         }
 
     }

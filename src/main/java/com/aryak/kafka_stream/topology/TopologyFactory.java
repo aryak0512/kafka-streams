@@ -113,14 +113,10 @@ public class TopologyFactory {
      * @return Topology
      */
     public static Topology buildTopology5() {
-
         StreamsBuilder sb = new StreamsBuilder();
-
-        // defined workflow of source processor, stream processor & sink processor
-        sb.stream(PRODUCTS, Consumed.with(Serdes.String(), SerdeFactory.productSerde()))
+        sb.stream(PRODUCTS, Consumed.with(Serdes.String(), SerdeFactory.productSerdeUsingGeneric()))
                 .filter((k, v) -> greaterThan3.test(v.productName()))
-                .to(PRODUCTS_TRANSFORMED, Produced.with(Serdes.String(), SerdeFactory.productSerde()));
-
+                .to(PRODUCTS_TRANSFORMED, Produced.with(Serdes.String(), SerdeFactory.productSerdeUsingGeneric()));
         return sb.build();
     }
 }
