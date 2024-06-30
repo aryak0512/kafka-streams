@@ -11,4 +11,6 @@ public class Constants {
     public static final String GREETINGS_UPPERCASE = "greetings_uppercase";
     public static final Predicate<String> greaterThan3 = s -> s.length() > 3;
     public static final String RESULT_TOPIC = "result";
+    public static final String PRODUCTS = "products";
+    public static final String PRODUCTS_TRANSFORMED = "products_transformed";
 }
