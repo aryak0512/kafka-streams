@@ -56,7 +56,7 @@ public class ProducerUtil {
     @SneakyThrows
     public void publish(Product product) throws Exception {
         String json = objectMapper.writeValueAsString(product);
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(PRODUCTS, null, json);
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(PRODUCTS, product.productName(), json);
         var send = producer.send(producerRecord);
         var recordMetadata = send.get();
         log.info("Publish success | Offset : {} | Partition : {}", recordMetadata.offset(), recordMetadata.partition());

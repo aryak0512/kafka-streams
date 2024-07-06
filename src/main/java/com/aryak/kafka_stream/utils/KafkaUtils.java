@@ -1,10 +1,14 @@
 package com.aryak.kafka_stream.utils;
 
+import com.aryak.kafka_stream.handler.DeserializationHandler;
+import com.aryak.kafka_stream.handler.SerializationHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.errors.DeserializationExceptionHandler;
+import org.apache.kafka.streams.errors.ProductionExceptionHandler;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -30,8 +34,16 @@ public class KafkaUtils {
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "my-app");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092");
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+        props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, getCores());
+        props.put(StreamsConfig.DEFAULT_PRODUCTION_EXCEPTION_HANDLER_CLASS_CONFIG, SerializationHandler.class.getName());
+        props.put(StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG, DeserializationHandler.class.getName());
         return props;
     }
+
+    private String getCores() {
+        return String.valueOf(Runtime.getRuntime().availableProcessors());
+    }
+
 
     /**
      * Takes kafka server properties & creates the topics provided in topics list
@@ -48,7 +60,7 @@ public class KafkaUtils {
         // building the actual topic object
         var kafkaTopics = topics.stream().map(topic ->
                 new NewTopic(topic, partitions, replicationFactor)
-        ).collect(toList());
+        ).toList();
 
         var createTopicsResult = adminClient.createTopics(kafkaTopics);
 

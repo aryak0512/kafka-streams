@@ -1,5 +1,6 @@
 package com.aryak.kafka_stream;
 
+import com.aryak.kafka_stream.handler.ProcessHandler;
 import com.aryak.kafka_stream.topology.TopologyFactory;
 import com.aryak.kafka_stream.utils.KafkaUtils;
 import org.apache.kafka.streams.KafkaStreams;
@@ -37,9 +38,11 @@ public class KafkaStreamApplication implements CommandLineRunner {
         kafkaUtils.createTopics(props, List.of(GREETINGS, GREETINGS_UPPERCASE, RESULT_TOPIC, PRODUCTS, PRODUCTS_TRANSFORMED));
 
         // step 3 : get and start the topology
-        var topology = TopologyFactory.buildTopology5();
+        var topology = TopologyFactory.buildKTable();
 
         KafkaStreams kafkaStreams = new KafkaStreams(topology, props);
+        kafkaStreams.setUncaughtExceptionHandler(new ProcessHandler());
+
 
         // graceful application shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

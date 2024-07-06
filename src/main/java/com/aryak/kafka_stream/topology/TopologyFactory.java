@@ -8,6 +8,7 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
 
 import java.util.Arrays;
@@ -117,6 +118,21 @@ public class TopologyFactory {
         sb.stream(PRODUCTS, Consumed.with(Serdes.String(), SerdeFactory.productSerdeUsingGeneric()))
                 .filter((k, v) -> greaterThan3.test(v.productName()))
                 .to(PRODUCTS_TRANSFORMED, Produced.with(Serdes.String(), SerdeFactory.productSerdeUsingGeneric()));
+        return sb.build();
+    }
+
+    /**
+     * exploring ktable
+     * @return topology
+     */
+    public static Topology buildKTable() {
+        StreamsBuilder sb = new StreamsBuilder();
+        sb.table(PRODUCTS,
+                        Consumed.with(Serdes.String(), SerdeFactory.productSerdeUsingGeneric()),
+                        Materialized.as("my-store")
+                )
+                .toStream()
+                .peek((k, v) -> log.info("Key : {} | Value : {}", k, v));
         return sb.build();
     }
 }
