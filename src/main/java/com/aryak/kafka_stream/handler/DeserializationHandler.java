@@ -22,6 +22,6 @@ public class DeserializationHandler implements DeserializationExceptionHandler {
 
     @Override
     public void configure(Map<String, ?> map) {
-        throw new UnsupportedOperationException();
+        // no need to add anything here
     }
 }

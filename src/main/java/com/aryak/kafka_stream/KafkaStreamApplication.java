@@ -3,14 +3,18 @@ package com.aryak.kafka_stream;
 import com.aryak.kafka_stream.handler.ProcessHandler;
 import com.aryak.kafka_stream.topology.TopologyFactory;
 import com.aryak.kafka_stream.utils.KafkaUtils;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KafkaStreams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 
 import java.util.List;
+import java.util.Properties;
 
 import static com.aryak.kafka_stream.utils.Constants.*;
 
@@ -26,6 +30,20 @@ public class KafkaStreamApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
         SpringApplication.run(KafkaStreamApplication.class, args);
+    }
+
+    /**
+     * configure the producer properties
+     *
+     * @return the producer properties
+     */
+    @Bean(value = "properties")
+    public static Properties getProperties() {
+        Properties props = new Properties();
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092");
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        return props;
     }
 
     @Override

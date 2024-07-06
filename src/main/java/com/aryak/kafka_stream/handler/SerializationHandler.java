@@ -20,6 +20,6 @@ public class SerializationHandler implements ProductionExceptionHandler {
 
     @Override
     public void configure(Map<String, ?> map) {
-        throw new UnsupportedOperationException();
+        // no need to add anything here
     }
 }
