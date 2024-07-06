@@ -56,7 +56,7 @@ public class KafkaStreamApplication implements CommandLineRunner {
         kafkaUtils.createTopics(props, List.of(GREETINGS, GREETINGS_UPPERCASE, RESULT_TOPIC, PRODUCTS, PRODUCTS_TRANSFORMED));
 
         // step 3 : get and start the topology
-        var topology = TopologyFactory.buildKTable();
+        var topology = TopologyFactory.buildTopology6();
 
         KafkaStreams kafkaStreams = new KafkaStreams(topology, props);
         kafkaStreams.setUncaughtExceptionHandler(new ProcessHandler());

@@ -1,15 +1,13 @@
 package com.aryak.kafka_stream.topology;
 
+import com.aryak.kafka_stream.domain.Product;
 import com.aryak.kafka_stream.serdes.SerdeFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.Materialized;
-import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.kstream.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -121,10 +119,6 @@ public class TopologyFactory {
         return sb.build();
     }
 
-    /**
-     * exploring ktable
-     * @return topology
-     */
     public static Topology buildKTable() {
         StreamsBuilder sb = new StreamsBuilder();
         sb.table(PRODUCTS,
@@ -133,6 +127,28 @@ public class TopologyFactory {
                 )
                 .toStream()
                 .peek((k, v) -> log.info("Key : {} | Value : {}", k, v));
+        return sb.build();
+    }
+
+
+    /**
+     * exploring the count stateful operation
+     * @return topology
+     */
+    public static Topology buildTopology6() {
+
+        StreamsBuilder sb = new StreamsBuilder();
+        KStream<String, Product> productKStream = sb.stream(PRODUCTS, Consumed.with(Serdes.String(), SerdeFactory.productSerdeUsingGeneric()));
+
+        // group by keys (keys should be non-null)
+        KTable<String, Long> productKTable = productKStream.groupByKey()
+                .count(Named.as("product-count"));
+
+        // converting kTable to kStream and viewing content
+        productKTable
+                .toStream()
+                .peek((k, v) -> log.info("Key : {} | Count : {}", k, v));
+
         return sb.build();
     }
 }

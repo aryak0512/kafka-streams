@@ -37,6 +37,7 @@ public class KafkaUtils {
         props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, getCores());
         props.put(StreamsConfig.DEFAULT_PRODUCTION_EXCEPTION_HANDLER_CLASS_CONFIG, SerializationHandler.class.getName());
         props.put(StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG, DeserializationHandler.class.getName());
+        props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 1000);
         return props;
     }
 
