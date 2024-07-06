@@ -7,14 +7,13 @@ import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.errors.DeserializationExceptionHandler;
-import org.apache.kafka.streams.errors.ProductionExceptionHandler;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.function.IntSupplier;
+import java.util.function.Supplier;
 
-import static java.util.stream.Collectors.toList;
 
 /**
  * @author aryak
@@ -34,17 +33,17 @@ public class KafkaUtils {
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "my-app");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092");
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
-        props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, getCores());
+        props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, getCores.getAsInt());
         props.put(StreamsConfig.DEFAULT_PRODUCTION_EXCEPTION_HANDLER_CLASS_CONFIG, SerializationHandler.class.getName());
         props.put(StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG, DeserializationHandler.class.getName());
         props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 1000);
         return props;
     }
 
-    private String getCores() {
-        return String.valueOf(Runtime.getRuntime().availableProcessors());
-    }
-
+    /**
+     * Returns the no. of CPU cores of the machine
+     */
+    private final IntSupplier getCores = () -> Runtime.getRuntime().availableProcessors();
 
     /**
      * Takes kafka server properties & creates the topics provided in topics list
@@ -59,9 +58,10 @@ public class KafkaUtils {
         AdminClient adminClient = AdminClient.create(props);
 
         // building the actual topic object
-        var kafkaTopics = topics.stream().map(topic ->
-                new NewTopic(topic, partitions, replicationFactor)
-        ).toList();
+        var kafkaTopics = topics
+                .stream()
+                .map(topic -> new NewTopic(topic, partitions, replicationFactor))
+                .toList();
 
         var createTopicsResult = adminClient.createTopics(kafkaTopics);
 

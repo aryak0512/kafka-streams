@@ -151,4 +151,27 @@ public class TopologyFactory {
 
         return sb.build();
     }
+
+    /**
+     * exploring the reduce operation
+     * <p>
+     * After grouping by key, the reduce operator parameters provides access
+     * to old value of that key (retrieved from internal kafka topic) and
+     * the current value being computed
+     * </p>
+     *
+     * @return the topology
+     */
+    public static Topology buildTopology7() {
+        StreamsBuilder sb = new StreamsBuilder();
+        var productKStream = sb.stream(PRODUCTS, Consumed.with(Serdes.String(), SerdeFactory.productSerdeUsingGeneric()));
+        productKStream
+                .groupByKey()
+                .reduce((oldValue, newValue) -> {
+                    log.info("Old product : {}", oldValue);
+                    log.info("New product : {}", newValue);
+                    return newValue;
+                });
+        return sb.build();
+    }
 }
