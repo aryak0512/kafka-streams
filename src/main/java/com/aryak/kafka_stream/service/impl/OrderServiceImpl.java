@@ -30,7 +30,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void produce(String topic, Order order) throws Exception {
         String json = mapper.writeValueAsString(order);
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(PRODUCTS, order.locationId(), json);
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, order.locationId(), json);
         var recordMetadata = producer.send(producerRecord).get();
         log.info("Publish success | Offset : {} | Partition : {}", recordMetadata.offset(), recordMetadata.partition());
     }
@@ -43,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void produce(String topic, String key, Order order) throws Exception {
         String json = mapper.writeValueAsString(order);
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(PRODUCTS, key, json);
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, key, json);
         // sync and blocking
         var recordMetadata = producer.send(producerRecord).get();
         log.info("Publish success | Offset : {} | Partition : {}", recordMetadata.offset(), recordMetadata.partition());

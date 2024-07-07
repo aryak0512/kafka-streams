@@ -28,7 +28,7 @@ public class ProduceServiceImpl implements ProducerService {
     @Override
     public void produce(String topic, Product product) throws Exception {
         String json = mapper.writeValueAsString(product);
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(PRODUCTS, product.productName(), json);
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, product.productName(), json);
         // sync and blocking
         var recordMetadata = producer.send(producerRecord).get();
         log.info("Publish success | Offset : {} | Partition : {}", recordMetadata.offset(), recordMetadata.partition());
@@ -42,7 +42,7 @@ public class ProduceServiceImpl implements ProducerService {
     @Override
     public void produce(String topic, String key, Product product) throws Exception {
         String json = mapper.writeValueAsString(product);
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(PRODUCTS, key, json);
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, key, json);
         // sync and blocking
         var recordMetadata = producer.send(producerRecord).get();
         log.info("Publish success | Offset : {} | Partition : {}", recordMetadata.offset(), recordMetadata.partition());

@@ -13,4 +13,10 @@ public class Constants {
     public static final String RESULT_TOPIC = "result";
     public static final String PRODUCTS = "products";
     public static final String PRODUCTS_TRANSFORMED = "products_transformed";
+
+    public static final String ORDERS = "orders";
+    public static final String GENERAL_ORDERS = "general_orders";
+    public static final String RESTAURANT_ORDERS = "restaurant_orders";
+    public static final String GENERAL_ORDERS_COUNT = "general_orders_count";
+    public static final String RESTAURANT_ORDERS_COUNT = "restaurant_orders_count";
 }

@@ -22,6 +22,9 @@ import java.util.Properties;
 @Slf4j
 public class ProducerUtil {
 
+    private ProducerUtil() {
+    }
+
     /**
      * configure the producer properties
      *
@@ -70,7 +73,7 @@ public class ProducerUtil {
                 .orderId(12345L)
                 .finalAmount(BigDecimal.valueOf(27.00))
                 .orderedDateTime(LocalDateTime.now())
-                .locationId("store_1234")
+                .locationId("store_5678")
                 .orderType(OrderType.GENERAL)
                 .orderLineItems(List.of(
 
@@ -90,7 +93,7 @@ public class ProducerUtil {
                 .build();
 
         var order2 = Order.builder()
-                .orderId(3333L)
+                .orderId(6356732L)
                 .finalAmount(BigDecimal.valueOf(27.00))
                 .orderedDateTime(LocalDateTime.now())
                 .locationId("store_1234")
@@ -113,10 +116,10 @@ public class ProducerUtil {
                 .build();
 
         var order3 = Order.builder()
-                .orderId(12345L)
+                .orderId(235276L)
                 .finalAmount(BigDecimal.valueOf(27.00))
                 .orderedDateTime(LocalDateTime.now())
-                .locationId("store_1234")
+                .locationId("store_5678")
                 .orderType(OrderType.GENERAL)
                 .orderLineItems(List.of(
 
@@ -136,7 +139,7 @@ public class ProducerUtil {
                 .build();
 
         var order4 = Order.builder()
-                .orderId(3333L)
+                .orderId(89763L)
                 .finalAmount(BigDecimal.valueOf(27.00))
                 .orderedDateTime(LocalDateTime.now())
                 .locationId("store_1234")

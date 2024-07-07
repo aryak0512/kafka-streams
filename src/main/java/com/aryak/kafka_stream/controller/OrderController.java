@@ -12,11 +12,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.aryak.kafka_stream.utils.Constants.ORDERS;
 import static com.aryak.kafka_stream.utils.Constants.PRODUCTS;
 
 @RestController
 @Slf4j
-@RequestMapping(value = "/publish")
+@RequestMapping(value = "/orders")
 public class OrderController {
 
     private final OrderService orderService;
@@ -33,19 +34,19 @@ public class OrderController {
     @GetMapping(value = "/bulk/v1")
     public ResponseEntity<List<Order>> publishBulk() {
 
-        var products = ProducerUtil.getOrders();
-
-        products
+        List<Order> orders = ProducerUtil.getOrders();
+        log.info("Orders list size : {}", orders.size());
+        orders
                 .parallelStream().forEach(p -> {
                     try {
-                        orderService.produce(PRODUCTS, p);
+                        orderService.produce(ORDERS, p);
                     } catch (Exception e) {
                         log.error("Exception occurred : {} ", e.getMessage(), e);
                     }
                 });
 
-        log.info("Products published successfully!");
-        return new ResponseEntity<>(products, HttpStatus.OK);
+        log.info("Orders published successfully!");
+        return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
     @GetMapping(value = "/v1/{key}")
@@ -55,7 +56,7 @@ public class OrderController {
         products
                 .parallelStream().forEach(p -> {
                     try {
-                        orderService.produce(PRODUCTS, key, p);
+                        orderService.produce(ORDERS, key, p);
                     } catch (Exception e) {
                         log.error("Exception occurred : {} ", e.getMessage(), e);
                     }
@@ -72,7 +73,7 @@ public class OrderController {
         products
                 .parallelStream().forEach(p -> {
                     try {
-                        orderService.produce(PRODUCTS, null, p);
+                        orderService.produce(ORDERS, null, p);
                     } catch (Exception e) {
                         log.error("Exception occurred : {} ", e.getMessage(), e);
                     }
@@ -93,7 +94,7 @@ public class OrderController {
     public ResponseEntity<Order> publishBody(@PathVariable(value = "key", required = false) String key,
                                                @RequestBody Order order) {
         try {
-            orderService.produce(PRODUCTS, key, order);
+            orderService.produce(ORDERS, key, order);
         } catch (Exception e) {
             log.error("Exception occurred : {} ", e.getMessage(), e);
         }
