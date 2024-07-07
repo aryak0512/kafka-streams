@@ -19,4 +19,7 @@ public class Constants {
     public static final String RESTAURANT_ORDERS = "restaurant_orders";
     public static final String GENERAL_ORDERS_COUNT = "general_orders_count";
     public static final String RESTAURANT_ORDERS_COUNT = "restaurant_orders_count";
+
+    public static final String BOOKS = "books";
+    public static final String AUTHORS = "authors";
 }

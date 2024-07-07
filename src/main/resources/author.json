@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "name": "Kathy Sierra",
+    "country": "USA"
+  },
+  {
+    "id": 2,
+    "name": "Doug Lea",
+    "country": "USA"
+  }
+]

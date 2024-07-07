@@ -1,9 +1,6 @@
 package com.aryak.kafka_stream.producer;
 
-import com.aryak.kafka_stream.domain.Order;
-import com.aryak.kafka_stream.domain.OrderLineItem;
-import com.aryak.kafka_stream.domain.OrderType;
-import com.aryak.kafka_stream.domain.Product;
+import com.aryak.kafka_stream.domain.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -162,5 +159,30 @@ public class ProducerUtil {
                 .build();
 
         return List.of(order1, order2, order3, order4);
+    }
+
+    public static List<Book> getBooks() {
+
+        Book book1 = Book.builder()
+                .id(100L)
+                .price(BigDecimal.valueOf(5.00))
+                .title("Head first Design patterns")
+                .authorId(1)
+                .build();
+
+        Book book2 = Book.builder()
+                .id(101L)
+                .price(BigDecimal.valueOf(15.00))
+                .title("Concurrency in Java")
+                .authorId(2)
+                .build();
+
+        return List.of(book1, book2);
+    }
+
+    public static List<Author> getAuthors() {
+        var author1 = Author.builder().name("Kathy Sierra").country("USA").id(1).build();
+        var author2 = Author.builder().name("Doug Lea").country("USA").id(2).build();
+        return List.of(author1, author2);
     }
 }

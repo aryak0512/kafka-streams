@@ -1,9 +1,6 @@
 package com.aryak.kafka_stream.serdes;
 
-import com.aryak.kafka_stream.domain.AggregateResult;
-import com.aryak.kafka_stream.domain.AggregateRevenue;
-import com.aryak.kafka_stream.domain.Order;
-import com.aryak.kafka_stream.domain.Product;
+import com.aryak.kafka_stream.domain.*;
 import com.aryak.kafka_stream.generic.GenericDeserializer;
 import com.aryak.kafka_stream.generic.GenericSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,6 +59,24 @@ public class SerdeFactory {
                 .configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false);
         GenericSerializer<AggregateRevenue> serializer = new GenericSerializer<>(objectMapper);
         GenericDeserializer<AggregateRevenue> deserializer = new GenericDeserializer<>(objectMapper, AggregateRevenue.class);
+        return Serdes.serdeFrom(serializer, deserializer);
+    }
+
+    public static Serde<Book> bookSerde() {
+        ObjectMapper objectMapper = new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false);
+        GenericSerializer<Book> serializer = new GenericSerializer<>(objectMapper);
+        GenericDeserializer<Book> deserializer = new GenericDeserializer<>(objectMapper, Book.class);
+        return Serdes.serdeFrom(serializer, deserializer);
+    }
+
+    public static Serde<Author> authorSerde() {
+        ObjectMapper objectMapper = new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false);
+        GenericSerializer<Author> serializer = new GenericSerializer<>(objectMapper);
+        GenericDeserializer<Author> deserializer = new GenericDeserializer<>(objectMapper, Author.class);
         return Serdes.serdeFrom(serializer, deserializer);
     }
 }

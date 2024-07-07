@@ -1,0 +1,14 @@
+[
+  {
+    "id": 100,
+    "title": "Head first Design patterns",
+    "price": 5.00,
+    "authorId": 1
+  },
+  {
+    "id": 101,
+    "title": "Concurrency in Java",
+    "price": 15.00,
+    "authorId": 2
+  }
+]

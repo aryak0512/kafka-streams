@@ -4,6 +4,7 @@ import com.aryak.kafka_stream.handler.ProcessHandler;
 import com.aryak.kafka_stream.topology.TopologyFactory;
 import com.aryak.kafka_stream.utils.KafkaUtils;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.IntegerSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KafkaStreams;
 import org.slf4j.Logger;
@@ -46,6 +47,15 @@ public class KafkaStreamApplication implements CommandLineRunner {
         return props;
     }
 
+    @Bean(value = "properties2")
+    public static Properties getProperties2() {
+        Properties props = new Properties();
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092");
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class);
+        return props;
+    }
+
     @Override
     public void run(String... args) throws Exception {
 
@@ -53,10 +63,20 @@ public class KafkaStreamApplication implements CommandLineRunner {
         var props = kafkaUtils.getProperties();
 
         // step 2 : create the topics to avoid errors
-        kafkaUtils.createTopics(props, List.of(GREETINGS, GREETINGS_UPPERCASE, RESULT_TOPIC, PRODUCTS, PRODUCTS_TRANSFORMED, ORDERS, GENERAL_ORDERS, RESTAURANT_ORDERS));
+        kafkaUtils.createTopics(props, List.of(
+                GREETINGS,
+                GREETINGS_UPPERCASE,
+                RESULT_TOPIC,
+                PRODUCTS,
+                PRODUCTS_TRANSFORMED,
+                ORDERS, GENERAL_ORDERS,
+                RESTAURANT_ORDERS,
+                BOOKS,
+                AUTHORS
+        ));
 
         // step 3 : get and start the topology
-        var topology = TopologyFactory.buildTopology12();
+        var topology = TopologyFactory.buildTopology13();
 
         KafkaStreams kafkaStreams = new KafkaStreams(topology, props);
         kafkaStreams.setUncaughtExceptionHandler(new ProcessHandler());

@@ -11,15 +11,15 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.state.KeyValueStore;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
 import static com.aryak.kafka_stream.utils.Constants.*;
-import static org.apache.kafka.streams.kstream.Branched.as;
 
 @Slf4j
 public class TopologyFactory {
+
+    static ForeachAction<Object, Object> peekAction = (key, value) -> log.info("Key : {} | Value : {}", key, value);
 
     private TopologyFactory() {
 
@@ -130,7 +130,7 @@ public class TopologyFactory {
                         Materialized.as("my-store")
                 )
                 .toStream()
-                .peek((k, v) -> log.info("Key : {} | Value : {}", k, v));
+                .peek(peekAction);
         return sb.build();
     }
 
@@ -151,7 +151,7 @@ public class TopologyFactory {
         // converting kTable to kStream and viewing content
         productKTable
                 .toStream()
-                .peek((k, v) -> log.info("Key : {} | Count : {}", k, v));
+                .peek(peekAction);
 
         return sb.build();
     }
@@ -206,7 +206,7 @@ public class TopologyFactory {
                         .withKeySerde(Serdes.String())
                         .withValueSerde(SerdeFactory.aggregateResultSerde()))
                 .toStream()
-                .peek((k, v) -> log.info("Key : {} | Value : {}", k ,v));
+                .peek(peekAction);
 
         return sb.build();
     }
@@ -310,7 +310,36 @@ public class TopologyFactory {
                                 .withValueSerde(SerdeFactory.aggregateRevenueSerde())
                 )
                 .toStream()
-                .peek((k,v) -> log.info("Key : {} | Value : {}", k, v));
+                .peek(peekAction);
+
+        return sb.build();
+    }
+
+    /**
+     * Books are produced in the "books" topic on key = authorId
+     * Authors are produced in the "authors" topic on key = id
+     * Topology that joins the book stream and author k-table based on author id key
+     * @return the join topology
+     */
+    public static Topology buildTopology13() {
+        StreamsBuilder sb = new StreamsBuilder();
+
+        // prepare book stream
+        KStream<Integer, Book> bookKStream = sb.stream(BOOKS, Consumed.with(Serdes.Integer(), SerdeFactory.bookSerde()));
+
+        // prepare author k-table
+        KTable<Integer, Author> authorKTable = sb.table(AUTHORS,
+                Consumed.with(Serdes.Integer(), SerdeFactory.authorSerde()),
+                Materialized.<Integer, Author, KeyValueStore<Bytes, byte[]>>as("author-store").withKeySerde(Serdes.Integer())
+                        .withValueSerde(SerdeFactory.authorSerde())
+        );
+
+        // prepare the DTO
+        ValueJoiner<Book, Author, BookInfo> valueJoiner = (book, author) -> new BookInfo(book.id(), book.title(), book.price(), author.name(), author.country());
+
+        bookKStream
+                .join(authorKTable, valueJoiner)
+                .peek(peekAction);
 
         return sb.build();
     }
