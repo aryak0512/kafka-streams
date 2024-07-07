@@ -13,7 +13,7 @@ public record Product(Integer productId,
     public String toString() {
         return
                 "productName: " + productName +
-                        " createdAt : " + createdAt + "";
+                        " createdAt : " + createdAt;
     }
 }
 

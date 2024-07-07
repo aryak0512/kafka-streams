@@ -1,0 +1,19 @@
+{
+  "orderId": 12345,
+  "locationId": "store_1234",
+  "finalAmount": 27.00,
+  "orderType": "GENERAL",
+  "orderLineItems": [
+    {
+      "item": "Bananas",
+      "count": 2,
+      "amount": 2.00
+    },
+    {
+      "item": "Iphone charger",
+      "count": 1,
+      "amount": 25.00
+    }
+  ],
+  "orderedDateTime": "2024-06-06T08:55:21"
+}

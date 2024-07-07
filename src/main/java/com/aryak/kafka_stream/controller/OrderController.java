@@ -1,6 +1,8 @@
 package com.aryak.kafka_stream.controller;
 
+import com.aryak.kafka_stream.domain.Order;
 import com.aryak.kafka_stream.domain.Product;
+import com.aryak.kafka_stream.service.OrderService;
 import com.aryak.kafka_stream.service.ProducerService;
 import com.aryak.kafka_stream.producer.ProducerUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -15,12 +17,12 @@ import static com.aryak.kafka_stream.utils.Constants.PRODUCTS;
 @RestController
 @Slf4j
 @RequestMapping(value = "/publish")
-public class ProductController {
+public class OrderController {
 
-    private final ProducerService producerService;
+    private final OrderService orderService;
 
-    public ProductController(ProducerService producerService) {
-        this.producerService = producerService;
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
     }
 
     /**
@@ -29,14 +31,14 @@ public class ProductController {
      * @return products published
      */
     @GetMapping(value = "/bulk/v1")
-    public ResponseEntity<List<Product>> publishBulk() {
+    public ResponseEntity<List<Order>> publishBulk() {
 
-        var products = ProducerUtil.getProducts();
+        var products = ProducerUtil.getOrders();
 
         products
                 .parallelStream().forEach(p -> {
                     try {
-                        producerService.produce(PRODUCTS, p);
+                        orderService.produce(PRODUCTS, p);
                     } catch (Exception e) {
                         log.error("Exception occurred : {} ", e.getMessage(), e);
                     }
@@ -47,13 +49,13 @@ public class ProductController {
     }
 
     @GetMapping(value = "/v1/{key}")
-    public ResponseEntity<List<Product>> publish(@PathVariable(value = "key") String key) {
+    public ResponseEntity<List<Order>> publish(@PathVariable(value = "key") String key) {
 
-        var products = ProducerUtil.getProducts();
+        var products = ProducerUtil.getOrders();
         products
                 .parallelStream().forEach(p -> {
                     try {
-                        producerService.produce(PRODUCTS, key, p);
+                        orderService.produce(PRODUCTS, key, p);
                     } catch (Exception e) {
                         log.error("Exception occurred : {} ", e.getMessage(), e);
                     }
@@ -64,13 +66,13 @@ public class ProductController {
     }
 
     @GetMapping(value = "/v1")
-    public ResponseEntity<List<Product>> publish() {
+    public ResponseEntity<List<Order>> publish() {
 
-        var products = ProducerUtil.getProducts();
+        var products = ProducerUtil.getOrders();
         products
                 .parallelStream().forEach(p -> {
                     try {
-                        producerService.produce(PRODUCTS, null, p);
+                        orderService.produce(PRODUCTS, null, p);
                     } catch (Exception e) {
                         log.error("Exception occurred : {} ", e.getMessage(), e);
                     }
@@ -84,18 +86,18 @@ public class ProductController {
      * Body passed through API
      *
      * @param key
-     * @param product
+     * @param order
      * @return the product produced
      */
     @PostMapping(value = "/v1/{key}")
-    public ResponseEntity<Product> publishBody(@PathVariable(value = "key", required = false) String key,
-                                               @RequestBody Product product) {
+    public ResponseEntity<Order> publishBody(@PathVariable(value = "key", required = false) String key,
+                                               @RequestBody Order order) {
         try {
-            producerService.produce(PRODUCTS, key, product);
+            orderService.produce(PRODUCTS, key, order);
         } catch (Exception e) {
             log.error("Exception occurred : {} ", e.getMessage(), e);
         }
-        log.info("Product : {} published successfully!", product);
-        return new ResponseEntity<>(product, HttpStatus.OK);
+        log.info("Product : {} published successfully!", order);
+        return new ResponseEntity<>(order, HttpStatus.OK);
     }
 }

@@ -1,4 +1,4 @@
-package com.aryak.kafka_stream.producer;
+package com.aryak.kafka_stream.service;
 
 import com.aryak.kafka_stream.domain.Product;
 

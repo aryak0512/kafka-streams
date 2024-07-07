@@ -1,5 +1,6 @@
 package com.aryak.kafka_stream.serdes;
 
+import com.aryak.kafka_stream.domain.AggregateResult;
 import com.aryak.kafka_stream.domain.Product;
 import com.aryak.kafka_stream.generic.GenericDeserializer;
 import com.aryak.kafka_stream.generic.GenericSerializer;
@@ -28,6 +29,19 @@ public class SerdeFactory {
                 .configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false);
         GenericSerializer<Product> serializer = new GenericSerializer<>(objectMapper);
         GenericDeserializer<Product> deserializer = new GenericDeserializer<>(objectMapper, Product.class);
+        return Serdes.serdeFrom(serializer, deserializer);
+    }
+
+    /**
+     * building the AggregateResult serde
+     * @return a AggregateResult serde
+     */
+    public static Serde<AggregateResult> aggregateResultSerde() {
+        ObjectMapper objectMapper = new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false);
+        GenericSerializer<AggregateResult> serializer = new GenericSerializer<>(objectMapper);
+        GenericDeserializer<AggregateResult> deserializer = new GenericDeserializer<>(objectMapper, AggregateResult.class);
         return Serdes.serdeFrom(serializer, deserializer);
     }
 }

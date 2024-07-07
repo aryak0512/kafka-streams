@@ -1,5 +1,6 @@
 package com.aryak.kafka_stream.topology;
 
+import com.aryak.kafka_stream.domain.AggregateResult;
 import com.aryak.kafka_stream.domain.Product;
 import com.aryak.kafka_stream.serdes.SerdeFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -172,6 +173,36 @@ public class TopologyFactory {
                     log.info("New product : {}", newValue);
                     return newValue;
                 });
+        return sb.build();
+    }
+
+    /**
+     * exploring the aggregate operation
+     * <p>
+     * After grouping by key, the aggregate operator provides access
+     * to old value of that key (retrieved from internal kafka topic) and
+     * the current value being computed with the returned value permissible of any type
+     * </p>
+     *
+     * @return the topology
+     */
+    public static Topology buildTopology8() {
+        StreamsBuilder sb = new StreamsBuilder();
+        var productKStream = sb.stream(PRODUCTS, Consumed.with(Serdes.String(), SerdeFactory.productSerdeUsingGeneric()));
+
+        // step 1 - before using any aggregate functions
+        KGroupedStream<String, Product> productKGroupedStream = productKStream.groupByKey();
+
+        // step 2 - building arguments required for aggregate function
+        //Initializer<AggregateResult> aggregateResultInitializer = AggregateResult :: new;
+        Aggregator<String, Product, AggregateResult > aggregator = new Aggregator<String, Product, AggregateResult>() {
+            @Override
+            public AggregateResult apply(String s, Product product, AggregateResult aggregateResult) {
+                return null;
+            }
+        };
+
+        //productKGroupedStream.aggregate()
         return sb.build();
     }
 }
