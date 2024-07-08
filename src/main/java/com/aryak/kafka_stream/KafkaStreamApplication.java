@@ -1,6 +1,8 @@
 package com.aryak.kafka_stream;
 
+import com.aryak.kafka_stream.domain.Product;
 import com.aryak.kafka_stream.handler.ProcessHandler;
+import com.aryak.kafka_stream.producer.ProducerUtil;
 import com.aryak.kafka_stream.topology.TopologyFactory;
 import com.aryak.kafka_stream.utils.KafkaUtils;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -13,13 +15,15 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.kafka.annotation.EnableKafkaStreams;
 
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
+import java.util.stream.StreamSupport;
 
 import static com.aryak.kafka_stream.utils.Constants.*;
 
 @SpringBootApplication
+@EnableKafkaStreams
 public class KafkaStreamApplication implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaStreamApplication.class);
@@ -59,6 +63,8 @@ public class KafkaStreamApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
+        play();
+
         // step 1 : fetch properties
         var props = kafkaUtils.getProperties();
 
@@ -69,10 +75,12 @@ public class KafkaStreamApplication implements CommandLineRunner {
                 RESULT_TOPIC,
                 PRODUCTS,
                 PRODUCTS_TRANSFORMED,
-                ORDERS, GENERAL_ORDERS,
+                ORDERS,
+                GENERAL_ORDERS,
                 RESTAURANT_ORDERS,
                 BOOKS,
-                AUTHORS
+                AUTHORS,
+                BOOK_INFO
         ));
 
         // step 3 : get and start the topology
@@ -80,7 +88,6 @@ public class KafkaStreamApplication implements CommandLineRunner {
 
         KafkaStreams kafkaStreams = new KafkaStreams(topology, props);
         kafkaStreams.setUncaughtExceptionHandler(new ProcessHandler());
-
 
         // graceful application shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -94,5 +101,21 @@ public class KafkaStreamApplication implements CommandLineRunner {
             log.error("Exception occurred : {}", e.getMessage(), e);
         }
 
+    }
+
+    /**
+     * demonstration of spliterator operation
+     */
+    private void play() {
+
+        List<Product> products = ProducerUtil.getProducts();
+        Iterator<Product> iterator = products.iterator();
+        Spliterator<Product> productSpliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
+
+        List<String> productNames = StreamSupport.stream(productSpliterator, false)
+                .map(Product::productName)
+                .toList();
+
+        log.info("Product names only : {} ", productNames);
     }
 }

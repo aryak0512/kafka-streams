@@ -79,4 +79,13 @@ public class SerdeFactory {
         GenericDeserializer<Author> deserializer = new GenericDeserializer<>(objectMapper, Author.class);
         return Serdes.serdeFrom(serializer, deserializer);
     }
+
+    public static Serde<BookInfo> bookInfoSerde() {
+        ObjectMapper objectMapper = new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false);
+        GenericSerializer<BookInfo> serializer = new GenericSerializer<>(objectMapper);
+        GenericDeserializer<BookInfo> deserializer = new GenericDeserializer<>(objectMapper, BookInfo.class);
+        return Serdes.serdeFrom(serializer, deserializer);
+    }
 }

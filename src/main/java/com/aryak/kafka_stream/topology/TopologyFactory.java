@@ -330,7 +330,8 @@ public class TopologyFactory {
         // prepare author k-table
         KTable<Integer, Author> authorKTable = sb.table(AUTHORS,
                 Consumed.with(Serdes.Integer(), SerdeFactory.authorSerde()),
-                Materialized.<Integer, Author, KeyValueStore<Bytes, byte[]>>as("author-store").withKeySerde(Serdes.Integer())
+                Materialized.<Integer, Author, KeyValueStore<Bytes, byte[]>>as("author-store")
+                        .withKeySerde(Serdes.Integer())
                         .withValueSerde(SerdeFactory.authorSerde())
         );
 
@@ -339,7 +340,8 @@ public class TopologyFactory {
 
         bookKStream
                 .join(authorKTable, valueJoiner)
-                .peek(peekAction);
+                .peek(peekAction)
+                .to(BOOK_INFO, Produced.with(Serdes.Integer(), SerdeFactory.bookInfoSerde()));
 
         return sb.build();
     }
